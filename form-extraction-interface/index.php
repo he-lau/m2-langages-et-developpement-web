@@ -7,7 +7,6 @@
     <?php 
         require_once "init.php";
     ?>
-    <meta name="referrer" content="no-referrer" />
 
 
 </head>
