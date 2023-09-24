@@ -1,0 +1,42 @@
+body, * {
+    margin: 0;
+    padding: 0;
+}
+
+.card {
+    border: 1px solid lightgray;
+    border-radius: 1rem;
+}
+
+.card-img-top {
+    width: 250px;
+    height: 250px;
+    margin: auto !important;
+    border-radius: 50%;
+    border: 1px solid lightgrey;
+}
+
+.user-chart {
+    /*
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    */
+    text-align: center; /* Center text within the div */
+}
+
+.card-header {
+    background-color: transparent;
+    border: none;
+    margin-bottom: 6px;
+    font-size: 1rem; /* Responsive font size */
+    overflow: auto;
+}
+
+.card-content {
+    text-align: center; /* Center text and image horizontally */
+}
+
+.card-img-top {
+    max-width: 100%; /* Ensure the image doesn't exceed the container width */
+}
