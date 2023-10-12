@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
+
+
+
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,15 +23,36 @@
     <!-- Model de notre app ---> 
     <script src="js/App.js"></script>
 </head>
+
+
+
+
+
+
 <body>
 
     <div id="main-container" class="container">
         <div class="project-description">
             <h1 style="font-size: 20px;">Contexte </h1>
-            <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Minima vel, ullam perferendis autem id soluta veritatis nesciunt? Vero accusamus odit excepturi voluptatum iusto quod fugit necessitatibus. Necessitatibus nostrum quibusdam asperiores!</p>
+            <p>
+                Projet universitaire pour le M2 Informatique THYP. 
+                <br>
+                Module : "Langages et développement web" 
+
+            </p>
         </div>
         <h1 style="font-size: 20px;"><a href="https://docs.google.com/forms/d/e/1FAIpQLSfK895qau6xKw-gBCa-NKbC3PR8by191UUBoo48hVEcq2N0Lg/viewform?usp=sf_link">Lien du formulaire</a></h1>
         <br><br>
+        <h1 style="font-size: 20px;">Filtres </h1>
+        <div id="filter-buttons">
+            <button class="btn btn-success" data-skill="HTML">HTML</button>
+            <button class="btn btn-success" data-skill="CSS">CSS</button>
+            <button class="btn btn-success" data-skill="JavaScript">JavaScript</button>
+            <button class="btn btn-success" data-skill="TypeScript">TypeScript</button>
+            <button class="btn btn-success" data-skill="PHP">PHP</button>
+        </div>
+        
+        <br>        
         <div id="main-row" class="row justify-content-center">
             <!-- Les cartes seront générées ici -->
         </div>
@@ -36,53 +63,83 @@
 </html>
 
 
+
 <script>
+    // retourne la somme de tous les elemnts à partir de 0
+    function calculateSkillsTotal(data) {
+            return data.reduce((total, value) => total + value, 0);
+    }   
+</script>
+
+
+<script>
+
     // DOM chargé
     document.addEventListener('DOMContentLoaded', function () {
 
-        console.log('ready');
+        //console.log('ready');
 
-        //
-        const _main_container = document.getElementById('main-container');
-        const _main_row = document.getElementById('main-row');
+        // conteneur principal
+        const _MAIN_CONTAINER = document.getElementById('main-container');
+        // conteneur pour les cartes
+        const _MAIN_ROW = document.getElementById('main-row');
+        // url de 
+        const _URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6VwtY1UmsEVtVwGX0KX2iQcbiMZo5kms3hsHRizsZSGuuWG9G9HD5FjCRJG2JMOYpiaVVuTNLu2zK/pub?gid=178537300&single=true&output=csv";
+        // liste de l'ensemble des données
+        var _DATAS;
+        // liste des 
+        //const _LABELS = ["HTML", "CSS", "JavaScript", "TypeScript", "PHP"];                
 
-        const _url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS6VwtY1UmsEVtVwGX0KX2iQcbiMZo5kms3hsHRizsZSGuuWG9G9HD5FjCRJG2JMOYpiaVVuTNLu2zK/pub?gid=178537300&single=true&output=csv";
 
-        //
+
+        // init notre app
         var _app = new App();
+        _app.setCsvUrl(_URL);
 
-        _app.setCsvUrl(_url);
-
-        //var _data = await _app.csvToArray();
-        //console.log(_app.getDatas()); 
-
+        // requête pour récupèrer les données depuis GOOGLE SHEET (_URL)
         _app.csvToArray()
         .then(datas => {
+
             console.log('Datas:', datas);
 
+            _DATAS= datas;
 
-            // commence par l'indice 1 car 0 correspond aux noms
+            // commence par l'indice 1 car 0 correspond aux noms des colonnes
             for (let i = 1; i < datas.length; i++) {
-                    // courant
-                    const data = datas[i];
-                    // div pour chaque tuple
-                    const card = document.createElement("div");
+                // courant
+                const data = datas[i];
+                // div pour chaque tuple
+                const card = document.createElement("div");
 
-                    card.className = "col-lg-4 col-md-12";
-                    card.innerHTML = `
-                    <div class="card" style="width: 18rem;">
-                        <div class="user-chart">
-                            <div class="card-header">
-                                <h1>#${i} ${data[1]}</h1>
-                            </div>
-                            <img class="card-img-top" src="${_app.transformGoogleDriveUrl(data[2])}" alt="Card image cap">
-                            <div class="card-body"></div>
-                            <canvas class="radar-chart" width="400" height="400"></canvas>
-                        </div>
-                    </div>
-                `;
+                // class bootstrap pour l'affichage
+                card.className = "col-lg-4 col-md-12";
+                // construction de la carte
+                card.innerHTML = 
+                '<div class="card" style="width: 18rem;">' +
+                '<div class="user-chart">' +
+                '<div class="card-header">' +
+                // NOM de l'utilisateur avec son INDICE    
+                '<h1>#' + i + ' ' + data[1] + '</h1>' +
+                '</div>' +
+                // IMAGE de l'utilisateur
+                '<img class="card-img-top" src="' + _app.transformGoogleDriveUrl(data[2]) + '" alt="Card image cap">' +
+                '<div class="card-body"></div>' +
+                // Graphique RADAR (canvas)
+                '<canvas class="radar-chart" data-card-index=' + i + ' width="400" height="400"></canvas>' +
+                '<br>' +
+                // Barre de progression pour representer le score total
+                // total * 4 : pouur avoir une mise à l'echelle 100% !! 
+                '<div style="width:70%;margin:auto" class="progress">' +
+                '<div  id="skills-progress-' + i + '" class="progress-bar custom-orange-progress" role="progressbar" style="width: ' + (data[data.length - 1] * 4) + '%;" aria-valuenow="' + data[data.length - 1] + '" aria-valuemin="0" aria-valuemax="25"></div>' +
+                '</div>' +
+                // Score total des compétences
+                '<h2 id="skills-total-' + i + '">Total : <span id="skills-total-value-' + i + '">' + data[data.length - 1] + '</span> /<span id="skills-total-max-' + i + '">25</span></h2>' +
+                '</div>' +
+                '</div>';
 
-                _main_row.appendChild(card);
+
+                // ajout au DOM la carte pour l'utilisateur courant    
+                _MAIN_ROW.appendChild(card);
 
                 /*
                     Radar chart avec ChartJS
@@ -90,42 +147,89 @@
 
                 // paramètres
 
-                // dom element
+                // canva depuis le DOM
                 const ctx = card.querySelector(".radar-chart").getContext("2d");
-                const labels = ["HTML", "CSS", "JavaScript", "TypeScript", "PHP"];
-                const skillLevels = data.slice(3).map(Number);
+                // ensemble des valeurs (le dernier est le total)    
+                const skillLevels = data.slice(3,-1);
 
+                //console.log(_LABELS);
+
+                // MAJ radar chart : creation de l'instance
                 const radarChart = new Chart(ctx, {
                     type: "radar",
                     data: {
-                        labels: labels,
+                        labels: ["HTML", "CSS", "JavaScript", "TypeScript", "PHP"],
                         datasets: [{
                             label: "Niveaux de compétences",
-                            data: data,
+                            //data: data,
+                            data:skillLevels,
                             backgroundColor: "rgba(75, 192, 192, 0.2)",
                             borderColor: "rgba(75, 192, 192, 1)",
                             borderWidth: 2
                         }]
                     },
                     options: {
-                        scale: {
-                            ticks: {
-                                beginAtZero: true,
-                                stepSize: 1,
-                                min: 0,
-                                max: 5
+                        scales: {
+                            // forcer le remplissage & l'affichage de tous les crans
+                            r: {
+                                angleLines: {
+                                display: false
+                            },
+                            // min
+                            suggestedMin: 0,
+                            // max
+                            suggestedMax: 5
                             }
                         }
-                    }
+                    },
+                    
                 });                
 
                 }
-        })
+
+        })    
+        // Une fois que toute les cartes sont construites
+        .then(() => {
+            //console.log(_DATAS);
+
+            // Récupérez les filtres
+            const htmlButton = document.querySelector('[data-skill="HTML"]');
+            const cssButton = document.querySelector('[data-skill="CSS"]');
+            const jsButton = document.querySelector('[data-skill="JavaScript"]');
+            const tsButton = document.querySelector('[data-skill="TypeScript"]');
+            const phpButton = document.querySelector('[data-skill="PHP"]');
+
+            htmlButton.addEventListener('click', function (e) {
+                console.log('click');
+
+                _app.updateSkill(_DATAS,"HTML",htmlButton);
+            });
+
+            cssButton.addEventListener('click', function () {
+
+                _app.updateSkill(_DATAS,"CSS",cssButton);    
+            });
+
+            jsButton.addEventListener('click', function () {
+
+                _app.updateSkill(_DATAS,"JavaScript",jsButton);    
+            });
+            
+            tsButton.addEventListener('click', function () {
+
+                _app.updateSkill(_DATAS,"TypeScript",tsButton);    
+            });
+            
+            phpButton.addEventListener('click', function () {
+
+                _app.updateSkill(_DATAS,"PHP",phpButton);    
+            });            
+    })        
         .catch((error) => {
             console.error('Error:', error);
-        });
-        
-        
+        }); // fin requête        
 
-    });
+
+    }); // fin DOM ready
+
 </script>
