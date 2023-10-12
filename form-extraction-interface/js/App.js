@@ -168,10 +168,21 @@ class App {
             // Mettre à jour le total des compétences
             const newTotal = calculateSkillsTotal(dataset.data);
             skillsTotalElement.textContent = newTotal;
+
+
+            // Trouver le coeffivient pour la barre de prog
     
             // Mettre à jour la barre de progression
             const progressBar = card.querySelector(`#skills-progress-${cardIndex}`);
-            progressBar.style.width = (newTotal * 4) + '%';
+
+            // si total === 0
+            if(! parseInt(newTotal)) {
+                progressBar.style.width = 0  + '%';
+
+            } else {
+                progressBar.style.width = parseInt(newTotal) /parseInt(skillsTotalMax.textContent)* 100  + '%';
+            }
+            
         });
     }    
 }
